@@ -1,6 +1,7 @@
 .git/
 .github/
 .env*
+!.env.example
 .next/
 .vercel/
 node_modules/
