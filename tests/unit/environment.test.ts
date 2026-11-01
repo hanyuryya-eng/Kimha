@@ -1,0 +1,92 @@
+import { describe, expect, it } from "vitest";
+import { resolveEnvironment } from "../../src/lib/environment";
+
+describe("배포 환경과 데이터 모드", () => {
+  it("데모 모드는 남아 있는 로컬 DB 설정으로 연결하지 않는다", () => {
+    expect(
+      resolveEnvironment({
+        dataMode: "demo",
+        supabaseUrl: "http://127.0.0.1:54321",
+        supabaseKey: "local-public-key",
+      }).backend,
+    ).toBe("demo");
+  });
+  it("불완전한 DB 연결을 데모 성공으로 가장하지 않는다", () => {
+    expect(() =>
+      resolveEnvironment({ supabaseUrl: "https://project.supabase.co" }),
+    ).toThrow("함께 설정");
+    expect(() => resolveEnvironment({ dataMode: "supabase" })).toThrow(
+      "함께 설정",
+    );
+  });
+  it("운영 환경에서 로컬 DB와 비밀 키를 거부한다", () => {
+    expect(() =>
+      resolveEnvironment({
+        hosted: true,
+        supabaseUrl: "http://127.0.0.1:54321",
+        supabaseKey: "public",
+        vercelUrl: "preview.vercel.app",
+      }),
+    ).toThrow("외부 HTTPS");
+    expect(() =>
+      resolveEnvironment({
+        supabaseUrl: "https://project.supabase.co",
+        supabaseKey: "sb_secret_private",
+      }),
+    ).toThrow("공개 키");
+    const payload = btoa(JSON.stringify({ role: "service_role" }));
+    expect(() =>
+      resolveEnvironment({
+        supabaseUrl: "https://project.supabase.co",
+        supabaseKey: `header.${payload}.signature`,
+      }),
+    ).toThrow("service_role");
+  });
+  it("실제 Supabase 연결은 공개 키와 외부 URL을 함께 사용한다", () => {
+    expect(
+      resolveEnvironment({
+        dataMode: "supabase",
+        hosted: true,
+        supabaseUrl: "https://project.supabase.co",
+        supabaseKey: "sb_publishable_example",
+        siteUrl: "https://jieum.example",
+      }),
+    ).toEqual({
+      backend: "supabase",
+      siteOrigin: "https://jieum.example",
+      preview: false,
+    });
+  });
+  it("미리보기 공유 링크는 실제 미리보기 호스트를 사용한다", () => {
+    expect(
+      resolveEnvironment({
+        hosted: true,
+        vercelEnvironment: "preview",
+        vercelUrl: "jieum-preview.vercel.app",
+        productionUrl: "jieum.vercel.app",
+      }).siteOrigin,
+    ).toBe("https://jieum-preview.vercel.app");
+  });
+  it("운영 공유 링크는 프로젝트 운영 도메인을 사용한다", () => {
+    expect(
+      resolveEnvironment({
+        hosted: true,
+        vercelEnvironment: "production",
+        vercelUrl: "jieum-build.vercel.app",
+        productionUrl: "jieum.vercel.app",
+      }).siteOrigin,
+    ).toBe("https://jieum.vercel.app");
+  });
+  it("배포 주소 누락·로컬 주소·인증 정보 포함 URL을 거부한다", () => {
+    expect(() => resolveEnvironment({ hosted: true })).toThrow("배포 주소");
+    expect(() =>
+      resolveEnvironment({ hosted: true, siteUrl: "http://localhost:3000" }),
+    ).toThrow("외부 HTTPS");
+    expect(() =>
+      resolveEnvironment({ siteUrl: "https://name:pass@example.com" }),
+    ).toThrow("인증 정보");
+    expect(() =>
+      resolveEnvironment({ siteUrl: "https://example.com/path" }),
+    ).toThrow("기본 주소");
+  });
+});

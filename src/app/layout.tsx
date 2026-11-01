@@ -13,12 +13,15 @@ import {
 } from "@/components/client-tools";
 import { session, demoMode } from "@/lib/data/repository";
 import { signOut } from "./actions";
+import { environment } from "@/lib/environment";
 import "./globals.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-  ),
+  metadataBase: new URL(environment().siteOrigin),
+  robots:
+    environment().backend === "demo" || environment().preview
+      ? { index: false, follow: false }
+      : undefined,
   title: { default: "지음 — 음악을 좀 더 가까이.", template: "%s | 지음" },
   description:
     "음악을 발견하고, 간직하고, 당신의 이야기를 남기는 디지털 음악 서재.",

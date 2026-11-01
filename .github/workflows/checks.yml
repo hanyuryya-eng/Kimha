@@ -1,0 +1,54 @@
+name: Release checks
+on:
+  push:
+    branches: [main, "release/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    env:
+      CI: "1"
+      JI_EUM_DATA_MODE: demo
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --grep-invert 'A–H:'
+  supabase:
+    runs-on: ubuntu-latest
+    env:
+      CI: "1"
+      E2E_CONNECTED: "1"
+      JI_EUM_DATA_MODE: supabase
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Start isolated local Supabase
+        run: npm run db:start > /tmp/ji-eum-db-start.log 2>&1
+      - run: node scripts/supabase.mjs migration up --local
+      - run: npm run test:db
+      - run: npm run db:env
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --grep 'A–H:'
+      - name: Stop local services
+        if: always()
+        run: npm run db:stop > /tmp/ji-eum-db-stop.log 2>&1

@@ -1,11 +1,9 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { environment } from "@/lib/environment";
 export function isConfigured() {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  );
+  return environment().backend === "supabase";
 }
 export async function supabase() {
   if (!isConfigured()) return null;

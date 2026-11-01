@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "db:start": "node scripts/supabase.mjs start -x realtime,storage-api,imgproxy,studio,postgres-meta,edge-runtime,logflare,vector,supavisor",
@@ -47,6 +47,6 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=22.13.0"
+    "node": "24.x"
   }
 }

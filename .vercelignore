@@ -1,0 +1,14 @@
+.git/
+.github/
+.env*
+.next/
+.vercel/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+supabase/
+tests/
+scripts/
+*.tsbuildinfo
+*.log

@@ -10,3 +10,5 @@ supabase/.temp/
 supabase/.branches/
 *.tsbuildinfo
 *.log
+.vercel/
+next-env.d.ts

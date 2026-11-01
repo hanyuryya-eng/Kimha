@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase/server";
+import { environment } from "@/lib/environment";
 import {
   noteSchema,
   playlistSchema,
@@ -73,7 +74,7 @@ export async function authenticate(_: Result, form: FormData): Promise<Result> {
         password,
         options: {
           data: { nickname },
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+          emailRedirectTo: `${environment().siteOrigin}/auth/callback`,
         },
       });
       check(error);

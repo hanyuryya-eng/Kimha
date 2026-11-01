@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { environment } from "./src/lib/environment";
+// Refuse accidental localhost DB connections and partial credentials on Vercel.
+environment();
 const config: NextConfig = {
   poweredByHeader: false,
   experimental: { cpus: 2 },
