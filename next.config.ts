@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
-import { environment } from "./src/lib/environment";
+import { backendEnvironment, environment } from "./src/lib/environment";
 // Refuse accidental localhost DB connections and partial credentials on Vercel.
-environment();
+const backend = backendEnvironment();
+// An anonymous local build receives its public hostname only after upload.
+if (
+  process.env.VERCEL !== "1" ||
+  backend === "supabase" ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.VERCEL_URL ||
+  process.env.VERCEL_PROJECT_PRODUCTION_URL
+)
+  environment();
 const config: NextConfig = {
   poweredByHeader: false,
   experimental: { cpus: 2 },

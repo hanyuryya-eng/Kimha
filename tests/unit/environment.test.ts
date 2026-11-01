@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { resolveEnvironment } from "../../src/lib/environment";
+import {
+  resolveEnvironment,
+  resolveBackend,
+  requestSiteOrigin,
+} from "../../src/lib/environment";
 
 describe("배포 환경과 데이터 모드", () => {
   it("데모 모드는 남아 있는 로컬 DB 설정으로 연결하지 않는다", () => {
@@ -88,5 +92,33 @@ describe("배포 환경과 데이터 모드", () => {
     expect(() =>
       resolveEnvironment({ siteUrl: "https://example.com/path" }),
     ).toThrow("기본 주소");
+  });
+  it("임시 빌드의 데모 선택에는 아직 없는 공개 주소가 필요하지 않다", () => {
+    expect(
+      resolveBackend({
+        dataMode: "demo",
+        hosted: true,
+        supabaseUrl: "http://127.0.0.1:54321",
+        supabaseKey: "local-public-key",
+      }),
+    ).toBe("demo");
+  });
+  it("임시 배포는 요청 시 Vercel 호스트로 실제 공유 주소를 정한다", () => {
+    const siteUrl = requestSiteOrigin("jieum-example.vercel.app", true);
+    expect(
+      resolveEnvironment({ dataMode: "demo", hosted: true, siteUrl })
+        .siteOrigin,
+    ).toBe("https://jieum-example.vercel.app");
+  });
+  it("요청 호스트를 통한 외부 주소·인증 정보·로컬 주소 주입을 거부한다", () => {
+    for (const host of [
+      null,
+      "localhost",
+      "example.com",
+      "jieum.vercel.app.evil.test",
+      "name:pass@jieum.vercel.app",
+      "jieum.vercel.app/path",
+    ])
+      expect(requestSiteOrigin(host, true)).toBeUndefined();
   });
 });

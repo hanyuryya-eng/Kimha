@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
 import {
   AudioLines,
   ArrowUpRight,
@@ -13,29 +14,35 @@ import {
 } from "@/components/client-tools";
 import { session, demoMode } from "@/lib/data/repository";
 import { signOut } from "./actions";
-import { environment } from "@/lib/environment";
+import { environment, requestSiteOrigin } from "@/lib/environment";
 import "./globals.css";
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  metadataBase: new URL(environment().siteOrigin),
-  robots:
-    environment().backend === "demo" || environment().preview
-      ? { index: false, follow: false }
-      : undefined,
-  title: { default: "지음 — 음악을 좀 더 가까이.", template: "%s | 지음" },
-  description:
-    "음악을 발견하고, 간직하고, 당신의 이야기를 남기는 디지털 음악 서재.",
-  applicationName: "지음",
-  manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
-  openGraph: {
-    title: "지음 — 음악을 좀 더 가까이.",
-    description: "당신의 취향이 이야기가 되는 곳.",
-    locale: "ko_KR",
-    type: "website",
-    images: ["/opengraph-image"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const host = (await headers()).get("host");
+  const config = environment(
+    requestSiteOrigin(host, process.env.VERCEL === "1"),
+  );
+  return {
+    metadataBase: new URL(config.siteOrigin),
+    robots:
+      config.backend === "demo" || config.preview
+        ? { index: false, follow: false }
+        : undefined,
+    title: { default: "지음 — 음악을 좀 더 가까이.", template: "%s | 지음" },
+    description:
+      "음악을 발견하고, 간직하고, 당신의 이야기를 남기는 디지털 음악 서재.",
+    applicationName: "지음",
+    manifest: "/manifest.webmanifest",
+    icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
+    openGraph: {
+      title: "지음 — 음악을 좀 더 가까이.",
+      description: "당신의 취향이 이야기가 되는 곳.",
+      locale: "ko_KR",
+      type: "website",
+      images: ["/opengraph-image"],
+    },
+  };
+}
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,

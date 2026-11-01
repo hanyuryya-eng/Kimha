@@ -44,7 +44,7 @@ function origin(value: string, name: string, hosted: boolean) {
   return parsed.origin;
 }
 
-export function resolveEnvironment(input: EnvironmentInput) {
+export function resolveBackend(input: EnvironmentInput): "demo" | "supabase" {
   const mode = input.dataMode || "auto";
   if (!["auto", "demo", "supabase"].includes(mode))
     throw new Error(
@@ -77,6 +77,11 @@ export function resolveEnvironment(input: EnvironmentInput) {
       backend = "supabase";
     }
   }
+  return backend;
+}
+
+export function resolveEnvironment(input: EnvironmentInput) {
+  const backend = resolveBackend(input);
   const inferred =
     input.vercelEnvironment === "production" && input.productionUrl
       ? input.productionUrl
@@ -99,9 +104,9 @@ export function resolveEnvironment(input: EnvironmentInput) {
   };
 }
 
-export function environment() {
+function environmentInput(): EnvironmentInput {
   // Explicit property access also lets Next.js inline public values at build time.
-  return resolveEnvironment({
+  return {
     dataMode: process.env.JI_EUM_DATA_MODE,
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
@@ -110,5 +115,31 @@ export function environment() {
     vercelEnvironment: process.env.VERCEL_ENV,
     vercelUrl: process.env.VERCEL_URL,
     productionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL,
-  });
+  };
+}
+
+export function backendEnvironment() {
+  return resolveBackend(environmentInput());
+}
+
+export function requestSiteOrigin(host: string | null, hosted: boolean) {
+  // Temporary builds have no URL yet. Trust only Vercel-routed hosts at request time.
+  if (
+    !hosted ||
+    !host ||
+    !/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.vercel\.app$/i.test(host)
+  )
+    return undefined;
+  return `https://${host.toLowerCase()}`;
+}
+
+export function environment(requestOrigin?: string) {
+  const input = environmentInput();
+  if (
+    !input.siteUrl &&
+    !input.vercelUrl &&
+    !(input.vercelEnvironment === "production" && input.productionUrl)
+  )
+    input.siteUrl = requestOrigin;
+  return resolveEnvironment(input);
 }
