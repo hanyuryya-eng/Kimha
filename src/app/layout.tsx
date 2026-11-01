@@ -18,10 +18,11 @@ import { environment, requestSiteOrigin } from "@/lib/environment";
 import "./globals.css";
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
-  const host = (await headers()).get("host");
-  const config = environment(
-    requestSiteOrigin(host, process.env.VERCEL === "1"),
-  );
+  const incoming = await headers();
+  const requestOrigin =
+    requestSiteOrigin(incoming.get("host")) ||
+    requestSiteOrigin(incoming.get("x-forwarded-host"));
+  const config = environment(requestOrigin);
   return {
     metadataBase: new URL(config.siteOrigin),
     robots:

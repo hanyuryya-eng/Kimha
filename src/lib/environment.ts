@@ -122,12 +122,11 @@ export function backendEnvironment() {
   return resolveBackend(environmentInput());
 }
 
-export function requestSiteOrigin(host: string | null, hosted: boolean) {
-  // Temporary builds have no URL yet. Trust only Vercel-routed hosts at request time.
+export function requestSiteOrigin(host: string | null) {
+  // Temporary builds have no URL yet. Accept only known deployment hosts.
   if (
-    !hosted ||
     !host ||
-    !/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.vercel\.app$/i.test(host)
+    !/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:vercel\.app|tmp\.now)$/i.test(host)
   )
     return undefined;
   return `https://${host.toLowerCase()}`;

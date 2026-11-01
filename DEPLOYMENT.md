@@ -65,10 +65,18 @@ CLI 65.9.0은 로그인 전 `--temporary` 배포도 지원합니다. 임시 배�
 읽기 전용 데모라면 **빌드와 실행 양쪽**에 `JI_EUM_DATA_MODE=demo`를 설정합니다.
 로컬 `.env.local`을 업로드하거나 `--prebuilt`로 로컬 DB 설정이 포함된 빌드를 올리지 않습니다.
 
-현재 클라우드 HTTP 정책에는 Vercel이 허용되지 않아 API 요청이 proxy CONNECT 403으로 차단됨을 확인했습니다.
-현재 초안에 `api.vercel.com`, `vercel.com`, `*.vercel.app` 추가를 저장했습니다.
-환경 설정에서 변경을 검토·저장하고 환경을 게시한 다음 실제 연결을 재확인해야 합니다.
-초안 저장만으로 네트워크가 적용되거나 웹 앱이 배포되지는 않습니다.
+2026-11-02 확인: 기존 Vercel API 접속 차단은 해소되었습니다. 인증 없는 API 요청은 이제 프록시가 아닌 Vercel에서 인증 토큰 부재 응답을 반환합니다.
+
+실제 임시 배포에서 발견한 빌드 문제를 보완했습니다.
+
+- 임시 배포는 로컬에서 `vercel build --prod`를 실행하며 기존 `.env.local`을 읽을 수 있습니다.
+- `npm run deploy:demo -- --temporary --yes --json`은 커밋된 소스를 별도 배포 산출물 디렉터리에 내보내고, 이 명령의 환경에서만 demo 모드와 빈 DB 설정을 사용합니다. 기존 환경 파일은 보존합니다. Git worktree를 만들지 않습니다.
+- 공개 주소가 아직 없는 빌드는 DB 모드만 먼저 검증하고, 요청 시 실제 배포 호스트로 공유 메타데이터를 만듭니다.
+- 실제 환경 파일은 함수 추적에서도 제외합니다. Vercel SDK가 참조하는 값 없는 `.env.example` 템플릿만 업로드 제외 규칙의 예외로 유지합니다.
+- 임시 배포의 실제 호스트는 `*.tmp.now`였습니다. 원래 허용한 `*.vercel.app`과 다르므로 내부 자동 검증을 위한 `*.tmp.now` 추가안을 환경 초안에 저장했습니다. 실제 적용에는 환경 설정 검토·저장·게시가 필요합니다.
+- Vercel SDK에서 배포 READY와 만료 시각을 확인했습니다. 외부 HTTP·브라우저 검증은 실제 접근 결과와 구분해서 기록합니다.
+
+이 관리형 환경에서 CLI 설정 저장소를 기존과 같이 사용하려면 명령 앞에 `XDG_CONFIG_HOME=/workspace/.config XDG_DATA_HOME=/workspace/.local/share XDG_CACHE_HOME=/workspace/.cache`를 지정합니다. 사용자 홈이나 기존 인증 정보를 덮어쓰지 않습니다.
 
 ## 2. 배포 주소의 실제 검증
 

@@ -104,7 +104,7 @@ describe("배포 환경과 데이터 모드", () => {
     ).toBe("demo");
   });
   it("임시 배포는 요청 시 Vercel 호스트로 실제 공유 주소를 정한다", () => {
-    const siteUrl = requestSiteOrigin("jieum-example.vercel.app", true);
+    const siteUrl = requestSiteOrigin("jieum-example.vercel.app");
     expect(
       resolveEnvironment({ dataMode: "demo", hosted: true, siteUrl })
         .siteOrigin,
@@ -119,6 +119,13 @@ describe("배포 환경과 데이터 모드", () => {
       "name:pass@jieum.vercel.app",
       "jieum.vercel.app/path",
     ])
-      expect(requestSiteOrigin(host, true)).toBeUndefined();
+      expect(requestSiteOrigin(host)).toBeUndefined();
+  });
+  it("새 임시 배포 도메인을 실제 HTTPS 공유 주소로 사용한다", () => {
+    const siteUrl = requestSiteOrigin("prompt-sable-i67ngaw.tmp.now");
+    expect(resolveEnvironment({ dataMode: "demo", siteUrl }).siteOrigin).toBe(
+      "https://prompt-sable-i67ngaw.tmp.now",
+    );
+    expect(requestSiteOrigin("prompt.tmp.now.evil.test")).toBeUndefined();
   });
 });
