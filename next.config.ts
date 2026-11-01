@@ -14,6 +14,8 @@ if (
 const config: NextConfig = {
   poweredByHeader: false,
   experimental: { cpus: 2 },
+  // Configuration is injected by the host; dotenv files are not function assets.
+  outputFileTracingExcludes: { "/*": ["./.env*"] },
   async headers() {
     return [
       {
