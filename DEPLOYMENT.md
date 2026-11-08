@@ -22,6 +22,7 @@
 
 - `.vercelignore`로 `.env*`, `.git`, `node_modules`, `.next`, 로컬 Supabase/도구 캐시, 테스트 결과를 업로드에서 제외합니다.
 - `.vercel/`은 Git에 넣지 않습니다. 프로젝트 링크·배포·인증 관련 로컬 상태를 공개하지 않습니다.
+- DB 도구 제외 규칙은 `/supabase/`로 최상위 폴더에 한정합니다. 앱에서 사용하는 `src/lib/supabase/server.ts`는 배포에 포함합니다.
 - Vercel에서는 localhost DB 주소, 불완전한 URL/키 설정, Supabase secret/service_role 키를 거부합니다.
 - `NEXT_PUBLIC_SITE_URL`을 지정하면 외부 HTTPS 기본 주소여야 합니다. 지정하지 않으면 Vercel의 실제 배포/운영 도메인을 사용합니다.
 - 데모 및 preview의 검색엔진 수집은 막습니다. 공개 서비스의 실제 데이터 모드로 전환할 때 운영 정책과 개인정보 절차를 확정하세요.
@@ -61,6 +62,7 @@ Node.js 24.x / Next.js가 자동 설정되도록 `vercel.json`을 포함합니�
 Vercel 로그인 정보나 토큰을 문서·소스·채팅에 넣지 않습니다.
 
 인증된 계정으로는 Vercel CLI의 일반 preview 배포를 사용합니다.
+새 프로젝트의 첫 배포는 Vercel에서 production만 허용합니다. 이때 `--prod --skip-domain`으로 운영 도메인 연결을 미루고 개별 배포 주소를 검사한 뒤 `vercel promote`로 운영 주소에 연결합니다. 이후 배포부터 일반 preview를 사용합니다.
 CLI 65.9.0은 로그인 전 `--temporary` 배포도 지원합니다. 임시 배포는 계정 소유의 운영 배포와 구분하고, 실제 만료/유지 조건과 결과를 확인해야 합니다.
 읽기 전용 데모라면 **빌드와 실행 양쪽**에 `JI_EUM_DATA_MODE=demo`를 설정합니다.
 로컬 `.env.local`을 업로드하거나 `--prebuilt`로 로컬 DB 설정이 포함된 빌드를 올리지 않습니다.

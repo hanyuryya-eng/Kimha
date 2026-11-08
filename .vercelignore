@@ -8,7 +8,7 @@ node_modules/
 coverage/
 playwright-report/
 test-results/
-supabase/
+/supabase/
 tests/
 scripts/
 *.tsbuildinfo
