@@ -41,7 +41,7 @@ npm run dev
 
 ## Supabase 프로젝트 생성 및 Vercel 배포
 
-읽기 전용 Vercel 데모는 배포됐습니다. 실제 회원가입·저장을 위한 외부 Supabase 프로젝트는 아직 생성하지 않았으며, 생성에는 사용자의 Supabase 계정 인증이 필요합니다.
+읽기 전용 Vercel 데모는 배포됐습니다. 회원 기능을 위한 외부 Supabase `ji-eum-db` 생성과 Vercel 연결도 완료했으며, DB 마이그레이션·Auth/메일 설정·실제 연결 검증은 진행 중입니다. 현재 운영 사이트는 계속 읽기 전용입니다. 최신 리소스 ID와 남은 절차는 DEPLOYMENT.md를 확인하세요.
 
 1. Supabase 대시보드에서 새 프로젝트를 생성하고 프로젝트가 준비될 때까지 기다립니다. DB 비밀번호는 안전한 저장소에서 관리하세요.
 2. SQL Editor에서 `supabase/migrations/`의 SQL 파일을 파일명 순서대로 모두 적용합니다. 또는 공식 CLI로 프로젝트를 연결한 후 `db push`를 사용합니다. 로컬용 helper에서 원격 reset을 실행하지 마세요.

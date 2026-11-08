@@ -22,14 +22,14 @@
 작업 브랜치는 `fix/supabase-auth`입니다. 현재 운영 배포는 위의 읽기 전용 버전이며, 아래 설정을 준비한 것만으로 운영 회원가입이 활성화되지는 않습니다.
 
 - 원인: 운영 프로젝트에 Supabase 환경변수가 없고 기본 배포 모드가 `demo`입니다.
-- Vercel Marketplace의 Supabase Free Plan($0/월), 서울(`icn1`), 리소스 이름 `ji-eum-db`로 설치를 준비했습니다. 서비스가 직접 약관 동의를 요구하여 아직 생성·연결은 완료하지 않았습니다.
-- 동의 주소: https://vercel.com/hanyuryya-3929/~/integrations/accept-terms/supabase?source=cli
-- 이 클라우드에서 `api.supabase.com` 요청은 프록시 CONNECT 403으로 거부됐습니다. Supabase 관리 API·대시보드·프로젝트 API 접속 허용이 필요합니다.
+- Vercel Marketplace의 Supabase Free Plan($0/월), 서울(`icn1`), 리소스 이름 `ji-eum-db` 생성과 `ji-eum` 프로젝트의 production/preview 연결을 완료했습니다. 리소스는 `store_w7GAFtTKK4z74jqE`, Supabase 프로젝트 ref는 `bmfcdtnjtrcnnwmfeduu`, 설치는 `icfg_z0tBzzwLsh6mtRnFN2zciqVQ`입니다. 이미 생성됐으므로 중복 생성하지 않습니다.
+- 제공자 약관 승인 완료와 설치 완료 시각을 확인한 뒤 생성했습니다. 운영 프로젝트에 공개 URL/키 등 Vercel 관리 환경변수가 등록됐음을 이름·대상만 확인했고 로컬 환경 파일은 보존했습니다. 관리용 DB/secret/service_role 환경변수는 앱 인증에 사용하지 않습니다.
+- 이 클라우드에서 `api.supabase.com` 요청은 프록시 CONNECT 403으로 거부됐습니다. 관리 API(`api.supabase.com`), 대시보드(`supabase.com`), 프로젝트 API(`bmfcdtnjtrcnnwmfeduu.supabase.co`) 접속 허용이 필요합니다. 초안 저장과 실제 런타임 적용은 구분합니다.
 - 공개 키는 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`를 우선하며, Vercel 연동이 제공하는 `NEXT_PUBLIC_SUPABASE_ANON_KEY`도 지원합니다. 두 이름 모두 비밀 키/service_role을 거부합니다.
 - `deploy:demo` / `deploy:connected`는 `scripts/deploy.mjs`를 사용합니다. 두 명령 모두 커밋된 소스만 내보내며, CLI의 빌드·실행 환경에 선택한 데이터 모드를 명시합니다. 연결 배포는 Vercel 프로젝트의 외부 DB 설정을 사용하며 로컬 `.env.local`은 보내지 않습니다.
 - 단위 34개, 타입·린트, 데모/로컬 Supabase 설정의 빌드 통과. 새 외부 DB의 가입·로그인·저장은 아직 검증하지 않았습니다.
 
-연결이 승인되면 새 DB 생성 → 기존 SQL 마이그레이션 적용 → 공개 URL/키 연결 → Auth URL·이메일 확인/SMTP 설정 → 실제 연결 미리보기 검사 → 운영 반영 순서로 진행합니다. 기존 운영 데이터 reset은 실행하지 않습니다. Supabase 기본 메일 서비스의 발송 대상·제한을 확인하고, 일반 가입자에게 메일을 보내려면 운영용 SMTP를 설정합니다.
+남은 절차는 접속 허용 적용 → 기존 SQL 마이그레이션 적용 → Auth URL·이메일 확인/SMTP 설정 → 실제 연결 미리보기 검사 → 운영 반영입니다. 기존 운영 데이터 reset은 실행하지 않습니다. Supabase 기본 메일 서비스의 발송 대상·제한을 확인하고, 일반 가입자에게 메일을 보내려면 운영용 SMTP를 설정합니다.
 
 ```sh
 npm run deploy:connected -- --scope hanyuryya-3929 --project ji-eum --environment preview --yes

@@ -99,7 +99,7 @@
 
 - 사용자 요청: 운영 화면의 회원가입·로그인·저장 비활성을 해소하기 위해 실제 Supabase 연결 진행.
 - `fix/supabase-auth` 브랜치. 운영 프로젝트의 환경변수 0개와 기본 demo 모드, Supabase CLI 미인증 상태를 실제 확인.
-- Vercel Marketplace에서 Supabase Free/서울/ji-eum-db로 설치 요청. 제공자 약관의 사용자 직접 승인이 필요하여 생성은 대기 중.
+- Vercel Marketplace의 제공자 약관/설치 완료 확인 후 Supabase Free/서울/ji-eum-db 생성 완료. 프로젝트 ref `bmfcdtnjtrcnnwmfeduu`, 리소스 `store_w7GAFtTKK4z74jqE`. Vercel `ji-eum` production/preview 연결과 원격 환경변수 이름·대상 확인 완료. 중복 생성하지 않음.
 - `deploy:connected`로 빌드·실행 데이터 모드를 명시하고, Vercel이 제공하는 공개 ANON_KEY 호환 추가. 데모 배포는 계속 명시적으로 demo 모드 사용.
 - 단위 34개·타입·린트·두 데이터 모드의 빌드 통과. 외부 DB의 실제 가입·로그인·저장은 아직 미검증.
-- 클라우드의 Supabase Management API 접속은 CONNECT 403. 접속 허용과 제공자 승인이 완료되면 새 프로젝트 생성·마이그레이션·Auth/이메일 설정·미리보기/운영 검증을 재개.
+- 클라우드의 Supabase Management API 접속은 CONNECT 403. 접속 허용이 적용되면 기존 새 프로젝트에서 마이그레이션·Auth/이메일 설정·미리보기/운영 검증을 재개. 현재 운영 앱은 기존 읽기 전용 배포를 유지.
