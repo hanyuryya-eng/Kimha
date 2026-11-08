@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
-    "deploy:demo": "node scripts/deploy-demo.mjs",
+    "deploy:demo": "node scripts/deploy.mjs demo",
+    "deploy:connected": "node scripts/deploy.mjs supabase",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint .",

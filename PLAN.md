@@ -94,3 +94,12 @@
 - 앱 커밋 `61ecb4b`에서 단위 31개·타입·린트·빌드, 실제 미리보기 브라우저 8개 통과 후 main으로 fast-forward 및 push.
 - https://ji-eum.vercel.app 운영 배포 READY, 운영 홈/OG 브라우저 1개 및 읽기 전용 표시·noindex·공유 도메인의 HTTP 검증 통과. 배포 ID는 DEPLOYMENT.md에 기록.
 - 실제 Supabase 계정/DB는 미생성. 공개 가상 데이터의 탐색만 제공하며 회원가입·저장은 비활성. 롤백은 실행하지 않음.
+
+## 회원 기능 연결 준비 (2026-11-08)
+
+- 사용자 요청: 운영 화면의 회원가입·로그인·저장 비활성을 해소하기 위해 실제 Supabase 연결 진행.
+- `fix/supabase-auth` 브랜치. 운영 프로젝트의 환경변수 0개와 기본 demo 모드, Supabase CLI 미인증 상태를 실제 확인.
+- Vercel Marketplace에서 Supabase Free/서울/ji-eum-db로 설치 요청. 제공자 약관의 사용자 직접 승인이 필요하여 생성은 대기 중.
+- `deploy:connected`로 빌드·실행 데이터 모드를 명시하고, Vercel이 제공하는 공개 ANON_KEY 호환 추가. 데모 배포는 계속 명시적으로 demo 모드 사용.
+- 단위 34개·타입·린트·두 데이터 모드의 빌드 통과. 외부 DB의 실제 가입·로그인·저장은 아직 미검증.
+- 클라우드의 Supabase Management API 접속은 CONNECT 403. 접속 허용과 제공자 승인이 완료되면 새 프로젝트 생성·마이그레이션·Auth/이메일 설정·미리보기/운영 검증을 재개.

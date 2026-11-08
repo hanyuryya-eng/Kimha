@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   resolveEnvironment,
   resolveBackend,
   requestSiteOrigin,
+  publicSupabaseEnvironment,
+  backendEnvironment,
 } from "../../src/lib/environment";
 
 describe("배포 환경과 데이터 모드", () => {
@@ -148,5 +150,38 @@ describe("배포 환경과 데이터 모드", () => {
       "https://prompt-sable-i67ngaw.tmp.now",
     );
     expect(requestSiteOrigin("prompt.tmp.now.evil.test")).toBeUndefined();
+  });
+});
+
+describe("Supabase 연결 환경변수", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("Vercel 연동의 공개 ANON_KEY로 DB 모드를 사용할 수 있다", () => {
+    vi.stubEnv("JI_EUM_DATA_MODE", "supabase");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://project.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "legacy-public-key");
+    expect(publicSupabaseEnvironment()).toEqual({
+      url: "https://project.supabase.co",
+      key: "legacy-public-key",
+    });
+    expect(backendEnvironment()).toBe("supabase");
+  });
+
+  it("새 공개 키가 있으면 이전 ANON_KEY보다 우선한다", () => {
+    vi.stubEnv(
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "sb_publishable_example",
+    );
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "legacy-public-key");
+    expect(publicSupabaseEnvironment().key).toBe("sb_publishable_example");
+  });
+
+  it("ANON_KEY라는 이름으로 등록한 비밀 키도 거부한다", () => {
+    vi.stubEnv("JI_EUM_DATA_MODE", "supabase");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://project.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "sb_secret_invalid");
+    expect(() => backendEnvironment()).toThrow("공개 키");
   });
 });

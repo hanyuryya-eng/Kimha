@@ -1,11 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { backendEnvironment } from "@/lib/environment";
+import {
+  backendEnvironment,
+  publicSupabaseEnvironment,
+} from "@/lib/environment";
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   if (backendEnvironment() === "demo") return response;
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
-    key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const { url, key } = publicSupabaseEnvironment();
   if (!url || !key) return response;
   const client = createServerClient(url, key, {
     cookies: {

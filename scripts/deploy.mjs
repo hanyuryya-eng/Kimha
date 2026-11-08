@@ -4,9 +4,13 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Vercel's anonymous deployment builds locally before a URL is allocated.
 // Export committed source, rather than exposing .env.local or local build traces.
 // This is a generated deployment artifact, not another Git checkout/worktree.
+const [mode, ...args] = process.argv.slice(2);
+if (mode !== "demo" && mode !== "supabase")
+  throw new Error("배포 모드는 demo 또는 supabase여야 합니다.");
+if (mode === "supabase" && args.includes("--temporary"))
+  throw new Error("실제 DB 연결에는 계정 소유의 Vercel 프로젝트가 필요합니다.");
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const git = (args) =>
   execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
@@ -22,7 +26,7 @@ if (
 )
   throw new Error("환경 값이 담긴 파일은 배포 소스에 포함할 수 없습니다.");
 const commit = git(["rev-parse", "HEAD"]);
-const source = mkdtempSync(path.join(tmpdir(), "ji-eum-demo-"));
+const source = mkdtempSync(path.join(tmpdir(), `ji-eum-${mode}-`));
 const archive = execFileSync("git", ["archive", "--format=tar", commit], {
   cwd: root,
   maxBuffer: 32 * 1024 * 1024,
@@ -30,9 +34,10 @@ const archive = execFileSync("git", ["archive", "--format=tar", commit], {
 execFileSync("tar", ["-xf", "-", "-C", source], { input: archive });
 const env = {
   ...process.env,
-  JI_EUM_DATA_MODE: "demo",
+  JI_EUM_DATA_MODE: mode,
   NEXT_PUBLIC_SUPABASE_URL: "",
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "",
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "",
 };
 const cache =
@@ -50,7 +55,11 @@ const result = spawnSync(
     "--",
     "vercel",
     "deploy",
-    ...process.argv.slice(2),
+    ...args,
+    "--env",
+    `JI_EUM_DATA_MODE=${mode}`,
+    "--build-env",
+    `JI_EUM_DATA_MODE=${mode}`,
   ],
   { env: { ...env, NPM_CONFIG_CACHE: cache }, cwd: source, stdio: "inherit" },
 );

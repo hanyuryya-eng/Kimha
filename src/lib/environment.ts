@@ -109,12 +109,22 @@ export function resolveEnvironment(
   };
 }
 
+export function publicSupabaseEnvironment() {
+  return {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    key:
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  };
+}
+
 function environmentInput(): EnvironmentInput {
   // Explicit property access also lets Next.js inline public values at build time.
+  const { url, key } = publicSupabaseEnvironment();
   return {
     dataMode: process.env.JI_EUM_DATA_MODE,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    supabaseUrl: url,
+    supabaseKey: key,
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
     hosted: process.env.VERCEL === "1",
     vercelEnvironment: process.env.VERCEL_ENV,

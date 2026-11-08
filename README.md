@@ -46,9 +46,9 @@ npm run dev
 1. Supabase 대시보드에서 새 프로젝트를 생성하고 프로젝트가 준비될 때까지 기다립니다. DB 비밀번호는 안전한 저장소에서 관리하세요.
 2. SQL Editor에서 `supabase/migrations/`의 SQL 파일을 파일명 순서대로 모두 적용합니다. 또는 공식 CLI로 프로젝트를 연결한 후 `db push`를 사용합니다. 로컬용 helper에서 원격 reset을 실행하지 마세요.
 3. 가상 카탈로그를 원할 때에만 `supabase/seed.sql`을 적용합니다. 실제 서비스의 곡·외부 링크·출처는 관리자에서 별도로 검증해 등록하세요.
-4. 프로젝트 API 설정에서 URL과 publishable key(또는 legacy anon key)를 `.env.local`이나 Vercel 환경변수에 넣습니다. `.env.example`을 참고하세요. **service_role / secret key는 프론트엔드·웹 서버에 넣지 않습니다.**
+4. 프로젝트 API 설정에서 URL과 publishable key를 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`로 `.env.local`이나 Vercel 환경변수에 넣습니다. Vercel 연동의 `NEXT_PUBLIC_SUPABASE_ANON_KEY`도 지원합니다. `.env.example`을 참고하세요. **service_role / secret key는 프론트엔드·웹 서버에 넣지 않습니다.**
 5. `NEXT_PUBLIC_SITE_URL`을 실제 배포 HTTPS 주소로 설정합니다. Supabase Auth URL 설정에서 Site URL과 `<배포 주소>/auth/callback`을 허용하고 이메일 제공자/SMTP를 설정합니다.
-6. Vercel에서 이 저장소를 가져옵니다. Framework: Next.js, install: `npm ci`, build: `npm run build`. 동일한 공개 환경변수를 등록하고 배포합니다.
+6. 현재 Vercel 프로젝트는 `hanyuryya-3929/ji-eum`입니다. 공개 연결 변수를 등록하고 `npm run deploy:connected -- --scope hanyuryya-3929 --project ji-eum --environment preview --yes`로 실제 DB 모드 미리보기를 검사한 뒤 `--prod`로 배포합니다. `deploy:demo`와 기본 `vercel.json`은 읽기 전용 모드이므로 DB 키만 추가해서는 회원 기능이 켜지지 않습니다.
 7. 실제 이메일 확인 링크·공개 URL·Web Share 동작을 배포 환경에서 재검증합니다. Web Share/클립보드는 HTTPS 또는 로컬 보안 컨텍스트에서 지원됩니다.
 
 현재 클라우드 네트워크는 도메인 제한이 있습니다. 원격 Supabase를 사용할 경우 해당 `<project-ref>.supabase.co`를 환경 설정의 허용 도메인에 **추가**해야 합니다. 여기서 테스트한 로컬 DB에는 외부 서비스 자격증명이 필요하지 않습니다.
