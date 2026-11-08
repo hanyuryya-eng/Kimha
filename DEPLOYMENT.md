@@ -1,5 +1,16 @@
 # 지음 1차 배포
 
+2026-11-08 운영 배포와 실제 HTTPS 검증 완료: **https://ji-eum.vercel.app**
+
+- 앱 소스: `61ecb4bdfd14fe1c746247acc5902dd5b93598de`, `release/v0.1.0`에서 검증 후 `main`에 반영.
+- 미리보기: https://ji-jrjhpkc93-hanyuryya-3929.vercel.app (`dpl_2uKAvp3dvSutWisZC1c9b5jYYf8A`).
+- 운영 배포: `dpl_5ozCKJvXk8PxQptB9grnweE1Dx4r`, 개별 주소 https://ji-gzrpv11j4-hanyuryya-3929.vercel.app.
+- 단위 31개, 타입 검사, 린트, 로컬/외부 빌드 통과. 미리보기 브라우저 8개와 운영 홈·OG 이미지 브라우저 1개 통과. 운영 HTTP에서 읽기 전용 안내·noindex·공유 이미지 도메인도 확인.
+- 프로젝트: `hanyuryya-3929/ji-eum`, Next.js / Node.js 24.x. 가상 데이터 공개 데모를 로그인 없이 열 수 있도록 프로젝트의 Vercel 인증 보호를 해제. 실제 회원가입·저장은 계속 비활성.
+- `npm audit --omit=dev`: 운영 의존성 취약점 0개. 빌드에서 보고된 개발 도구의 moderate 경고 8개는 별도 업데이트 검토 대상.
+- GitHub Actions 상태 조회는 API 접근이 Forbidden으로 거부되어 확인하지 못함. 위 결과는 직접 실행한 검사이며 GitHub CI 성공을 뜻하지 않음.
+- 롤백은 실행하지 않음. 이후 변경도 별도 브랜치 → 검사/preview → main/production 순서로 진행.
+
 사용자 선택: 첫 버전은 읽기 전용 데모. 외부 Supabase 없이 화면·검색·공개 예시를 확인합니다. `vercel.json`의 빌드/실행 환경을 모두 demo로 고정하며 회원 데이터를 수집하지 않습니다.
 
 작업 브랜치: `release/v0.1.0`. 초기 MVP 기준 커밋은 `7ba5178`입니다.
@@ -63,6 +74,11 @@ Node.js 24.x / Next.js가 자동 설정되도록 `vercel.json`을 포함합니�
 Vercel 로그인 정보나 토큰을 문서·소스·채팅에 넣지 않습니다.
 
 인증된 계정으로는 Vercel CLI의 일반 preview 배포를 사용합니다.
+
+```sh
+npm run deploy:demo -- --scope hanyuryya-3929 --project ji-eum --environment preview --yes
+```
+
 새 프로젝트의 첫 배포는 Vercel에서 production만 허용합니다. 이때 `--prod --skip-domain`으로 운영 도메인 연결을 미루고 개별 배포 주소를 검사한 뒤 `vercel promote`로 운영 주소에 연결합니다. 이후 배포부터 일반 preview를 사용합니다.
 CLI 65.9.0은 로그인 전 `--temporary` 배포도 지원합니다. 임시 배포는 계정 소유의 운영 배포와 구분하고, 실제 만료/유지 조건과 결과를 확인해야 합니다.
 읽기 전용 데모라면 **빌드와 실행 양쪽**에 `JI_EUM_DATA_MODE=demo`를 설정합니다.
@@ -96,6 +112,12 @@ E2E_BASE_URL=https://실제-배포-주소 npm run test:e2e -- --grep-invert 'A�
 - Deployment Protection이 적용되어 접근이 막히면 프로젝트의 설정·허용 대상을 확인하고 결과를 명시합니다.
 
 ## 3. 운영 반영
+
+```sh
+npm run deploy:demo -- --scope hanyuryya-3929 --project ji-eum --prod --yes
+```
+
+현재 배포는 CLI로 수행했습니다. GitHub 연결을 통한 자동 배포는 설정하거나 검증하지 않았습니다.
 
 - 미리보기의 실제 HTTP 및 브라우저 검사가 통과한 커밋만 `main`에 반영합니다.
 - Vercel 계정의 운영 프로젝트·운영 환경변수·도메인을 확인하고 production 배포를 실행합니다.
