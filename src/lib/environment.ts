@@ -80,7 +80,10 @@ export function resolveBackend(input: EnvironmentInput): "demo" | "supabase" {
   return backend;
 }
 
-export function resolveEnvironment(input: EnvironmentInput) {
+export function resolveEnvironment(
+  input: EnvironmentInput,
+  requestOrigin?: string,
+) {
   const backend = resolveBackend(input);
   const inferred =
     input.vercelEnvironment === "production" && input.productionUrl
@@ -88,15 +91,17 @@ export function resolveEnvironment(input: EnvironmentInput) {
       : input.vercelUrl;
   const siteOrigin = input.siteUrl
     ? origin(input.siteUrl, "NEXT_PUBLIC_SITE_URL", !!input.hosted)
-    : inferred
-      ? origin(`https://${inferred}`, "VERCEL_URL", true)
-      : input.hosted
-        ? (() => {
-            throw new Error(
-              "배포 주소를 확인할 수 없습니다. NEXT_PUBLIC_SITE_URL을 설정해 주세요.",
-            );
-          })()
-        : "http://localhost:3000";
+    : requestOrigin
+      ? origin(requestOrigin, "REQUEST_ORIGIN", !!input.hosted)
+      : inferred
+        ? origin(`https://${inferred}`, "VERCEL_URL", true)
+        : input.hosted
+          ? (() => {
+              throw new Error(
+                "배포 주소를 확인할 수 없습니다. NEXT_PUBLIC_SITE_URL을 설정해 주세요.",
+              );
+            })()
+          : "http://localhost:3000";
   return {
     backend,
     siteOrigin,
@@ -123,7 +128,8 @@ export function backendEnvironment() {
 }
 
 export function requestSiteOrigin(host: string | null) {
-  // Temporary builds have no URL yet. Accept only known deployment hosts.
+  // A staged production build may not have an assigned domain yet.
+  // Use the requested origin only for known deployment hosts.
   if (
     !host ||
     !/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:vercel\.app|tmp\.now)$/i.test(host)
@@ -133,12 +139,5 @@ export function requestSiteOrigin(host: string | null) {
 }
 
 export function environment(requestOrigin?: string) {
-  const input = environmentInput();
-  if (
-    !input.siteUrl &&
-    !input.vercelUrl &&
-    !(input.vercelEnvironment === "production" && input.productionUrl)
-  )
-    input.siteUrl = requestOrigin;
-  return resolveEnvironment(input);
+  return resolveEnvironment(environmentInput(), requestOrigin);
 }

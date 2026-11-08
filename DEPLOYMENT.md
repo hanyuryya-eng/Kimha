@@ -25,6 +25,7 @@
 - DB 도구 제외 규칙은 `/supabase/`로 최상위 폴더에 한정합니다. 앱에서 사용하는 `src/lib/supabase/server.ts`는 배포에 포함합니다.
 - Vercel에서는 localhost DB 주소, 불완전한 URL/키 설정, Supabase secret/service_role 키를 거부합니다.
 - `NEXT_PUBLIC_SITE_URL`을 지정하면 외부 HTTPS 기본 주소여야 합니다. 지정하지 않으면 Vercel의 실제 배포/운영 도메인을 사용합니다.
+- 도메인 연결을 미룬 배포에서도 공유 이미지가 열리도록, 페이지 메타데이터는 검증된 실제 요청 호스트를 Vercel의 기본 운영 도메인보다 우선합니다. 명시한 `NEXT_PUBLIC_SITE_URL`은 계속 최우선입니다.
 - 데모 및 preview의 검색엔진 수집은 막습니다. 공개 서비스의 실제 데이터 모드로 전환할 때 운영 정책과 개인정보 절차를 확정하세요.
 
 ## 배포 전 검사

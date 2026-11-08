@@ -81,6 +81,27 @@ describe("배포 환경과 데이터 모드", () => {
       }).siteOrigin,
     ).toBe("https://jieum.vercel.app");
   });
+  it("운영 도메인 연결 전에도 요청한 배포 주소에서 공유 이미지가 열린다", () => {
+    expect(
+      resolveEnvironment(
+        {
+          hosted: true,
+          vercelEnvironment: "production",
+          vercelUrl: "jieum-staged.vercel.app",
+          productionUrl: "jieum-unassigned.vercel.app",
+        },
+        requestSiteOrigin("jieum-staged.vercel.app"),
+      ).siteOrigin,
+    ).toBe("https://jieum-staged.vercel.app");
+  });
+  it("명시한 기본 주소는 배포 요청 주소보다 우선한다", () => {
+    expect(
+      resolveEnvironment(
+        { hosted: true, siteUrl: "https://jieum.example" },
+        requestSiteOrigin("jieum-staged.vercel.app"),
+      ).siteOrigin,
+    ).toBe("https://jieum.example");
+  });
   it("배포 주소 누락·로컬 주소·인증 정보 포함 URL을 거부한다", () => {
     expect(() => resolveEnvironment({ hosted: true })).toThrow("배포 주소");
     expect(() =>
